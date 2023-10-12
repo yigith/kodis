@@ -1,14 +1,17 @@
 import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export default function ColorModeChanger() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(localStorage["colorMode"] == "dark");
   const colorMode = dark ? 'dark' : 'light';
   const linkColor = !dark ? 'link-dark' : 'link-light';
+  const ttMessage = dark ? 'Turn on lights' : 'Turn off lights';
+
   useEffect(() => {
-      document.documentElement.setAttribute('data-bs-theme', colorMode);
+    document.documentElement.setAttribute('data-bs-theme', colorMode);
+    localStorage.setItem('colorMode', colorMode);
   }, [dark]);
 
   const handleClick = (e) => {
@@ -17,8 +20,10 @@ export default function ColorModeChanger() {
   };
 
   return (
-      <a href="#" onClick={handleClick} className={linkColor}  title="Toggle Light/Dark Mode">
-          <FontAwesomeIcon icon={dark ? faMoon : faSun} />
+    <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ ttMessage }</Tooltip>} placement='bottom-end'>
+      <a href="#" onClick={handleClick} className={linkColor}>
+        <FontAwesomeIcon icon={dark ? faMoon : faSun} />
       </a>
+    </OverlayTrigger>
   )
 }
