@@ -13,7 +13,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>{children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('theme') || 'light');
+          `
+          }}
+        />
+      </body>
     </html>
   )
 }
