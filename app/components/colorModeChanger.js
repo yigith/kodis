@@ -25,7 +25,7 @@ export default function ColorModeChanger() {
 
   return (
     <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ ttMessage }</Tooltip>} placement='bottom-end'>
-      <a href="#" onClick={handleClick} className={linkColor}>
+      <a href="#" onClick={handleClick} className={`btn-switch-color-theme ${linkColor}`}>
         <FontAwesomeIcon icon={dark ? faMoon : faSun} />
       </a>
     </OverlayTrigger>

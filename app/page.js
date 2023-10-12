@@ -1,11 +1,8 @@
 "use client";
-import { Alert, Button, Container, Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faK, faMarker } from '@fortawesome/free-solid-svg-icons';
+import { Alert, Container, Navbar } from 'react-bootstrap';
 import ColorModeChanger from './components/colorModeChanger';
-import { Tilt_Neon } from 'next/font/google'
-
-const brandFont = Tilt_Neon({ subsets: ['latin-ext'], weight: '400' });
+import NavbarLinkCopier from './components/navbarLinkCopier';
+import NavbarBrand from './components/navbarBrand';
 
 export default function Home() {
 
@@ -13,21 +10,8 @@ export default function Home() {
     <>
       <Navbar className="bg-body-tertiary">
         <Container>
-          <a href="/" className="navbar-brand">
-            <FontAwesomeIcon icon={faMarker} />
-            <span className={brandFont.className}> KOD.IS</span>
-          </a>
-
-          <form className='me-2'>
-            <div className="input-group">
-              <input type="text" className="form-control" placeholder="https://kod.is/abcdef" />
-              <OverlayTrigger id="o2" overlay={<Tooltip id="tt-copy-link">Copy</Tooltip>} placement='bottom'>
-                <Button variant="outline-secondary" id="button-addon2">
-                  <FontAwesomeIcon icon={faCopy} />
-                </Button>
-              </OverlayTrigger>
-            </div>
-          </form>
+          <NavbarBrand />
+          <NavbarLinkCopier url="https://kod.is/abQ1c0" />
           <ColorModeChanger />
         </Container>
       </Navbar>
