@@ -16,7 +16,7 @@ export default function ColorModeChanger() {
       localStorage.setItem('colorMode', colorMode);
 
     document.documentElement.setAttribute('data-bs-theme', colorMode);
-  }, [dark]);
+  }, [colorMode]);
 
   const handleClick = (e) => {
     e.preventDefault();
