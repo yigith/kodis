@@ -16,7 +16,7 @@ export default function ColorModeChanger() {
       localStorage.setItem('colorMode', colorMode);
 
     document.documentElement.setAttribute('data-bs-theme', colorMode);
-  }, [colorMode]);
+  }, [colorMode, dark]);
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export default function ColorModeChanger() {
 
   return (
     <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ ttMessage }</Tooltip>} placement='bottom-end'>
-      <a href="#" onClick={handleClick} className={`btn-switch-color-theme ${linkColor}`}>
+      <a href="#switch-color-theme" onClick={handleClick} className={`btn-switch-color-theme ${linkColor}`}>
         <FontAwesomeIcon icon={dark ? faMoon : faSun} />
       </a>
     </OverlayTrigger>
