@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export default function ColorModeChanger() {
-  const [dark, setDark] = useState(localStorage["colorMode"] == "dark");
+  const [dark, setDark] = useState(null);
   const colorMode = dark ? 'dark' : 'light';
   const linkColor = !dark ? 'link-dark' : 'link-light';
   const ttMessage = dark ? 'Turn on lights' : 'Turn off lights';
 
   useEffect(() => {
+    if (dark === null)
+      setDark(localStorage.getItem('colorMode') === 'dark');
+    else
+      localStorage.setItem('colorMode', colorMode);
+
     document.documentElement.setAttribute('data-bs-theme', colorMode);
-    localStorage.setItem('colorMode', colorMode);
   }, [dark]);
 
   const handleClick = (e) => {
