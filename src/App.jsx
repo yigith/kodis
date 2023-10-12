@@ -17,14 +17,13 @@ function App() {
         </Container>
       </Navbar>
       <Container>
-        <Alert className='mt-3' variant='info'>Bu bir bilgi kutusudur.</Alert>
-        <div>
-          Slug: { slug }
-        </div>
+        <Alert className='mt-3' variant='info'>
+            Slug: { slug ?? "Anasayfadasınız.." }
+          </Alert>
 
         <Link to="/">Home</Link>{" | "}
         <Link to="/foo">Foo</Link>{" | "}
-        <Link to="/foo">Test</Link>
+        <Link to="/abQ1c0">https://kod.is/abQ1c0</Link>
       </Container>
     </>
   );
