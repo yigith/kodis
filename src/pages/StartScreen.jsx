@@ -3,7 +3,7 @@ import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
 import { useState } from 'react';
 
-function StartScreen({onNotebookCodeSubmit}) {
+function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
   const [notebookCode, setNotebookCode] = useState('');
 
   const handleCodeSubmit = () => {
@@ -11,9 +11,14 @@ function StartScreen({onNotebookCodeSubmit}) {
       onNotebookCodeSubmit(notebookCode);
   };
 
+  const handleCreateClick = () => {
+    if (onCreateSubmit)
+      onCreateSubmit();
+  };
+
   return (
     <div className="StartScreen">
-      <Row xs={1} md={2} className='gy-4 g-md-5 justify-content-center'>
+      <Row xs={1} md={2} className='gy-4 gx-md-4 justify-content-center'>
         <Col sm={10}>
           <StartScreenCard headerTitle='I Have a Notebook' buttonText='Open' onSubmit={handleCodeSubmit}>
             <Form.Group className="mb-3">
@@ -23,7 +28,7 @@ function StartScreen({onNotebookCodeSubmit}) {
           </StartScreenCard>
         </Col>
         <Col sm={10}>
-          <StartScreenCard headerTitle='I Want a Notebook' buttonText='Create'>
+          <StartScreenCard headerTitle='I Want a Notebook' buttonText='Create' onSubmit={handleCreateClick}>
             <Card.Text className='lead text-center'>Keep & Share Your Notes with your friends!</Card.Text>
           </StartScreenCard>
         </Col>
