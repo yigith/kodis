@@ -20,7 +20,7 @@ function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
     <div className="StartScreen">
       <Row xs={1} md={2} className='gy-4 gx-md-4 justify-content-center'>
         <Col sm={10}>
-          <StartScreenCard headerTitle='I Have a Notebook' buttonText='Open' onSubmit={handleCodeSubmit}>
+          <StartScreenCard headerTitle='I already have a code..' buttonText='Open' onSubmit={handleCodeSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Notebook Code</Form.Label>
               <Form.Control size="lg" type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
@@ -28,8 +28,8 @@ function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
           </StartScreenCard>
         </Col>
         <Col sm={10}>
-          <StartScreenCard headerTitle='I Want a Notebook' buttonText='Create' onSubmit={handleCreateClick}>
-            <Card.Text className='lead text-center'>Keep & Share Your Notes with your friends!</Card.Text>
+          <StartScreenCard headerTitle='I want a new one..' buttonText='Create' onSubmit={handleCreateClick}>
+            <Card.Text className='lead text-center'>Share your notes with your friends for <strong>24 hours</strong>!</Card.Text>
           </StartScreenCard>
         </Col>
       </Row>
