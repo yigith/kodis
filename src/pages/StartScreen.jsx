@@ -1,16 +1,24 @@
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
+import { useState } from 'react';
 
-function StartScreen() {
+function StartScreen({onNotebookCodeSubmit}) {
+  const [notebookCode, setNotebookCode] = useState('');
+
+  const handleCodeSubmit = () => {
+    if (onNotebookCodeSubmit)
+      onNotebookCodeSubmit(notebookCode);
+  };
+
   return (
     <div className="StartScreen">
       <Row xs={1} md={2} className='gy-4 g-md-5 justify-content-center'>
         <Col sm={10}>
-          <StartScreenCard headerTitle='I Have a Notebook' buttonText='Open'>
+          <StartScreenCard headerTitle='I Have a Notebook' buttonText='Open' onSubmit={handleCodeSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Notebook Code</Form.Label>
-              <Form.Control size="lg" type="text" placeholder="Ex: a3Bq7D" />
+              <Form.Control size="lg" type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
             </Form.Group>
           </StartScreenCard>
         </Col>
