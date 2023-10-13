@@ -1,31 +1,30 @@
-import { Alert, Container, Navbar } from 'react-bootstrap';
+import './App.css';
+import { Container, Navbar } from 'react-bootstrap';
 import ColorModeChanger from './components/colorModeChanger';
 import NavbarLinkCopier from './components/navbarLinkCopier';
 import NavbarBrand from './components/navbarBrand';
 import { Link, useParams } from 'react-router-dom';
+import StartScreen from './pages/StartScreen';
 
 function App() {
-  let { slug } = useParams();
+  const { slug } = useParams();
+  const isStartPage = slug === undefined;
 
   return (
-    <>
+    <div className='App'>
       <Navbar className="bg-body-tertiary">
-        <Container>
+        <Container fluid="xxl">
           <NavbarBrand />
-          <NavbarLinkCopier url="https://kod.is/abQ1c0" />
+          { !isStartPage && <NavbarLinkCopier url="https://kod.is/abQ1c0" /> }
           <ColorModeChanger />
         </Container>
       </Navbar>
-      <Container>
-        <Alert className='mt-3' variant='info'>
-            Slug: { slug ?? "Anasayfadasınız.." }
-          </Alert>
+      <Container fluid="xxl" className='flex-fill'>
+        {isStartPage && <StartScreen />}
 
-        <Link to="/">Home</Link>{" | "}
-        <Link to="/foo">Foo</Link>{" | "}
-        <Link to="/abQ1c0">https://kod.is/abQ1c0</Link>
+        {/* <Link to="/">Home</Link> */}
       </Container>
-    </>
+    </div>
   );
 }
 
