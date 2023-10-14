@@ -31,14 +31,14 @@ function ThemePicker() {
   const [selectedTheme, setSelectedTheme] = useState(localStorage.getItem("theme") || "default");
 
   return (
-    <NavDropdown title="Theme" align="end">
+    <NavDropdown title={<i className="bi bi-paint-bucket"></i>} align="end">
       {themes.map((theme) => (
-        <NavDropdown.Item data-bs-theme="dark" active={theme.toLowerCase() === selectedTheme} 
+        <NavDropdown.Item data-bs-theme="dark" active={theme.toLowerCase() === selectedTheme}
           key={theme}
           onClick={() => {
             localStorage.setItem("theme", theme.toLowerCase());
             setSelectedTheme(theme.toLowerCase());
-            window.setBootstrapCdnLink();
+            window.setBootstrapCdnLinkWithPreload();
           }}
         >
           {theme}

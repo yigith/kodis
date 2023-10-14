@@ -1,4 +1,4 @@
-window.bootstrapCdnUrl = function () {
+window.getBootstrapCdnUrl = function () {
   const theme = localStorage.getItem('theme') || 'default';
 
   const themeUrl = theme == 'default'
@@ -10,7 +10,23 @@ window.bootstrapCdnUrl = function () {
 
 window.setBootstrapCdnLink = function () {
   const link = document.getElementById('bs-cdn-link');
-  link.href = bootstrapCdnUrl();
+  link.href = getBootstrapCdnUrl();
 }
 
-document.write(`<link id="bs-cdn-link" rel="stylesheet" href="${window.bootstrapCdnUrl()}">`);
+window.setBootstrapCdnLinkWithPreload = function () {
+  const existingLink = document.getElementById('bs-cdn-link');
+  console.log(existingLink)
+  console.log(existingLink.parentNode)
+  const link = document.createElement('link');
+  link.id = 'bs-cdn-link';
+  link.rel = 'preload';
+  link.as = 'style';
+  link.href = getBootstrapCdnUrl();
+  link.onload = () => {
+    link.rel = 'stylesheet';
+    setTimeout(() => existingLink.remove(), 100);
+  };
+  existingLink.parentNode.insertBefore(link, existingLink);
+};
+
+document.write(`<link id="bs-cdn-link" rel="stylesheet" href="${window.getBootstrapCdnUrl()}">`);
