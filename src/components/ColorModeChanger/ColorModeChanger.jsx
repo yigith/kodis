@@ -25,7 +25,7 @@ export default function ColorModeChanger() {
   return (
     <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ ttMessage }</Tooltip>} placement='bottom-end'>
       <a href="#switch-color-theme" onClick={handleClick} className={`ms-auto me-1 btn-switch-color-them`}>
-        <FontAwesomeIcon icon={dark ? faMoon : faSun} />
+        <i className={`bi bi-${dark ? "moon-stars" : "sun"}-fill`}></i>
       </a>
     </OverlayTrigger>
   )

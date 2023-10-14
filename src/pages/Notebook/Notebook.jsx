@@ -35,12 +35,12 @@ function Notebook() {
             </Nav.Link>
           </Nav.Item>
         </Nav>
-        <Form.Group className="mb-3 flex-fill">
+        <Form.Group className="mb-2 flex-fill">
           <Form.Control className="textarea-content" as="textarea" placeholder="Write your notes here..."
             value={content}
             onChange={handleContentChange} />
         </Form.Group>
-        <div className="mb-3">
+        <div className="mb-2">
           <Button variant="primary" type="submit">Save</Button>
         </div>
       </Form>

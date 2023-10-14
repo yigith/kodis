@@ -1,14 +1,14 @@
 import './App.css';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import ColorModeChanger from './components/colorModeChanger';
-import NavbarLinkCopier from './components/navbarLinkCopier';
-import NavbarBrand from './components/navbarBrand';
+import ColorModeChanger from './components/ColorModeChanger/ColorModeChanger';
+import NavbarLinkCopier from './components/NavbarLinkCopier/NavbarLinkCopier';
+import NavbarBrand from './components/NavbarBrand/NavbarBrand';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import StartScreen from './pages/StartScreen';
+import StartScreen from './pages/StartScreen/StartScreen';
 import { useState } from 'react';
-import Loading from './components/Loading';
-import Notebook from './pages/Notebook';
-import ThemePicker from './components/themePicker';
+import Loading from './components/Loading/Loading';
+import Notebook from './pages/Notebook/Notebook';
+import ThemePicker from './components/ThemePicker/ThemePicker';
 
 const AppModes = {
   Loading: 0,

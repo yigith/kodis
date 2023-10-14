@@ -26,8 +26,8 @@ const themes = [
   "Zephyr"
 ];
 
-
 function ThemePicker() {
+  console.log(window.test)
   return (
     <NavDropdown title="Theme" align="end">
       {themes.map((theme) => (
@@ -35,7 +35,7 @@ function ThemePicker() {
           key={theme}
           onClick={() => {
             localStorage.setItem("theme", theme.toLowerCase());
-            window.location.reload();
+            window.setBootstrapCdnLink();
           }}
         >
           {theme}

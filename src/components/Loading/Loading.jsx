@@ -1,5 +1,5 @@
 import "./Loading.css";
-import loadingAnimation from "../assets/loading.svg";
+import loadingAnimation from "./loading.svg";
 
 function Loading() {
   return ( 

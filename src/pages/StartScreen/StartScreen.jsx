@@ -18,10 +18,10 @@ function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
 
   return (
     <div className="StartScreen">
-      <Row xs={1} md={2} className='gy-4 gx-md-4 justify-content-center'>
+      <Row xs={1} md={2} className='gy-3 gx-md-4 justify-content-center'>
         <Col sm={10}>
           <StartScreenCard headerTitle='I already have a code..' buttonText='Open' onSubmit={handleCodeSubmit}>
-            <Form.Group className="mb-3">
+            <Form.Group>
               <Form.Label>Notebook Code</Form.Label>
               <Form.Control size="lg" type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
             </Form.Group>
