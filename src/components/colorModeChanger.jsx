@@ -6,7 +6,6 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 export default function ColorModeChanger() {
   const [dark, setDark] = useState(null);
   const colorMode = dark ? 'dark' : 'light';
-  const linkColor = !dark ? 'link-dark' : 'link-light';
   const ttMessage = dark ? 'Turn on lights' : 'Turn off lights';
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function ColorModeChanger() {
 
   return (
     <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ ttMessage }</Tooltip>} placement='bottom-end'>
-      <a href="#switch-color-theme" onClick={handleClick} className={`btn-switch-color-theme ${linkColor}`}>
+      <a href="#switch-color-theme" onClick={handleClick} className={`ms-auto me-1 btn-switch-color-them`}>
         <FontAwesomeIcon icon={dark ? faMoon : faSun} />
       </a>
     </OverlayTrigger>

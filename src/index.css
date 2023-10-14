@@ -4,17 +4,7 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-}
-
-.navbar-brand {
-  background-color: var(--bs-dark);
-  line-height: 1;
-}
-
-[data-bs-theme="dark"] .navbar-brand {
-  background-color: var(--bs-gray-600);
-  background-image: linear-gradient(60deg, #29323c 0%, #485563 70%, #29323c 100%);
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 .btn-switch-color-theme {

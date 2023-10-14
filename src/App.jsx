@@ -1,5 +1,5 @@
 import './App.css';
-import { Container, Navbar } from 'react-bootstrap';
+import { Container, Nav, Navbar } from 'react-bootstrap';
 import ColorModeChanger from './components/colorModeChanger';
 import NavbarLinkCopier from './components/navbarLinkCopier';
 import NavbarBrand from './components/navbarBrand';
@@ -8,11 +8,12 @@ import StartScreen from './pages/StartScreen';
 import { useState } from 'react';
 import Loading from './components/Loading';
 import Notebook from './pages/Notebook';
+import ThemePicker from './components/themePicker';
 
 const AppModes = {
   Loading: 0,
   StartScreen: 1,
-  Creating: 2, 
+  Creating: 2,
   Editing: 3,
   NotFound: 4
 };
@@ -20,7 +21,7 @@ const AppModes = {
 function App() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [appMode, setAppMode] = useState(slug ? AppModes.Loading : AppModes.StartScreen); 
+  const [appMode, setAppMode] = useState(slug ? AppModes.Loading : AppModes.StartScreen);
   const [notebookCode, setNotebookCode] = useState(slug);
   const is = (mode) => appMode === mode;
 
@@ -36,11 +37,17 @@ function App() {
 
   return (
     <div className='App'>
-      <Navbar className="bg-body-tertiary">
+
+      <Navbar className='bg-primary' data-bs-theme="dark">
         <Container fluid="xxl">
           <NavbarBrand />
-          { is(AppModes.Editing) && <NavbarLinkCopier url={`https://kod.is/${notebookCode}`} /> }
-          <ColorModeChanger />
+          {is(AppModes.Editing) && <NavbarLinkCopier url={`https://kod.is/${notebookCode}`} />}
+          <Navbar.Collapse id="basic-navbar-nav">
+            <ColorModeChanger />
+            <Nav>
+              <ThemePicker />
+            </Nav>
+          </Navbar.Collapse>
         </Container>
       </Navbar>
       <Container fluid="xxl" className='flex-fill'>
