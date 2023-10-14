@@ -10,10 +10,7 @@ const themes = [
   "Journal",
   "Litera",
   "Lumen",
-  "Lux",
-  "Materia",
   "Minty",
-  "Morph",
   "Pulse",
   "Quartz",
   "Sandstone",
@@ -32,9 +29,9 @@ const themes = [
 
 function ThemePicker() {
   return (
-    <NavDropdown title="Theme">
+    <NavDropdown title="Theme" align="end">
       {themes.map((theme) => (
-        <NavDropdown.Item data-bs-theme="dark"
+        <NavDropdown.Item data-bs-theme="dark" active={theme.toLowerCase() === localStorage.getItem("theme")} 
           key={theme}
           onClick={() => {
             localStorage.setItem("theme", theme.toLowerCase());

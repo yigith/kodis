@@ -3,6 +3,11 @@ html, body, #root {
   overflow: hidden;
 }
 
+.dropdown-menu{
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 body {
   font-family: 'Source Sans 3', sans-serif;
 }
