@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavDropdown } from "react-bootstrap";
 
 const themes = [
@@ -27,14 +28,16 @@ const themes = [
 ];
 
 function ThemePicker() {
-  console.log(window.test)
+  const [selectedTheme, setSelectedTheme] = useState(localStorage.getItem("theme") || "default");
+
   return (
     <NavDropdown title="Theme" align="end">
       {themes.map((theme) => (
-        <NavDropdown.Item data-bs-theme="dark" active={theme.toLowerCase() === localStorage.getItem("theme")} 
+        <NavDropdown.Item data-bs-theme="dark" active={theme.toLowerCase() === selectedTheme} 
           key={theme}
           onClick={() => {
             localStorage.setItem("theme", theme.toLowerCase());
+            setSelectedTheme(theme.toLowerCase());
             window.setBootstrapCdnLink();
           }}
         >

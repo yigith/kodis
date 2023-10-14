@@ -21,7 +21,7 @@ const AppModes = {
 function App() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [appMode, setAppMode] = useState(slug ? AppModes.Loading : AppModes.StartScreen);
+  const [appMode, setAppMode] = useState(slug == "new" ? AppModes.Creating : slug ? AppModes.Loading : AppModes.StartScreen);
   const [notebookCode, setNotebookCode] = useState(slug);
   const is = (mode) => appMode === mode;
 
@@ -33,6 +33,7 @@ function App() {
 
   const handleCreateSubmit = () => {
     setAppMode(AppModes.Creating);
+    navigate("/new");
   };
 
   return (
