@@ -1,3 +1,7 @@
+window.setBodyThemeAttribute = function () {
+  document.body.setAttribute("data-bw-theme", localStorage.getItem('theme') || 'default');
+};
+
 window.getBootstrapCdnUrl = function () {
   const theme = localStorage.getItem('theme') || 'default';
 
@@ -15,18 +19,19 @@ window.setBootstrapCdnLink = function () {
 
 window.setBootstrapCdnLinkWithPreload = function () {
   const existingLink = document.getElementById('bs-cdn-link');
-  console.log(existingLink)
-  console.log(existingLink.parentNode)
   const link = document.createElement('link');
   link.id = 'bs-cdn-link';
-  link.rel = 'preload';
-  link.as = 'style';
+  link.rel = 'stylesheet';
   link.href = getBootstrapCdnUrl();
   link.onload = () => {
-    link.rel = 'stylesheet';
-    setTimeout(() => existingLink.remove(), 100);
+    window.setBodyThemeAttribute();
+    existingLink.remove();
   };
   existingLink.parentNode.insertBefore(link, existingLink);
 };
 
 document.write(`<link id="bs-cdn-link" rel="stylesheet" href="${window.getBootstrapCdnUrl()}">`);
+// dom ready
+window.addEventListener('DOMContentLoaded', () => {
+  window.setBodyThemeAttribute();
+});
