@@ -3,15 +3,21 @@ import "./Notebook.css";
 import React, { useState } from 'react';
 
 function Notebook() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [notes, setNotes] = useState([{
+    title: 'Note 1',
+    content: ''
+  }]);
+  const [activeNote, setActiveNote] = useState(notes[0]);
+  const ani = () => notes.indexOf(activeNote); // ani: active note index
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
   };
 
   const handleContentChange = (event) => {
-    setContent(event.target.value);
+    const newNotes = [...notes];
+    newNotes[ani()].content = event.target.value;
+    setNotes(newNotes);
   };
 
   const handleSave = () => {
@@ -19,26 +25,31 @@ function Notebook() {
     console.log(`Title: ${title}\nContent: ${content}`);
   };
 
+  const handleTabClick = (event, index) => {
+    event.preventDefault();
+    setActiveNote(notes[index]);
+  }
+
   return (
     <div className="Notebook">
       <Form>
-        <Nav variant="tabs" defaultActiveKey="#" className="mt-2">
-          <Nav.Item>
-            <Nav.Link href="#">Active</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="link-1">Option 2</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="disabled" disabled>
-              Disabled
-            </Nav.Link>
-          </Nav.Item>
+        <Nav variant="tabs" defaultActiveKey={`#note-${ani()}`} className="mt-2">
+          {
+            notes.map((note, index) => {
+              return (
+                <Nav.Item key={index}  onClick={(e) => handleTabClick(e, index)}>
+                  <Nav.Link href={`#note-${index}`}>
+                    {note.title}
+                  </Nav.Link>
+                </Nav.Item>
+              );
+            })
+          }
         </Nav>
         <Form.Group className="mb-2 flex-fill">
-          <Form.Control className="textarea-content" as="textarea" placeholder="Write your notes here..."
-            value={content}
-            onChange={handleContentChange} />
+          {activeNote && <Form.Control className="textarea-content" as="textarea" placeholder="Write your notes here..."
+            value={activeNote.content}
+            onChange={handleContentChange} />}
         </Form.Group>
         <div className="mb-2">
           <Button variant="primary" type="submit">Save</Button>

@@ -3,7 +3,7 @@ import { Container, Nav, Navbar } from 'react-bootstrap';
 import ColorModeChanger from './components/ColorModeChanger/ColorModeChanger';
 import NavbarLinkCopier from './components/NavbarLinkCopier/NavbarLinkCopier';
 import NavbarBrand from './components/NavbarBrand/NavbarBrand';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import StartScreen from './pages/StartScreen/StartScreen';
 import { useState } from 'react';
 import Loading from './components/Loading/Loading';
