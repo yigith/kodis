@@ -14,7 +14,6 @@
 .textarea-content {
   height: 100%;
   border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }
 
 .new-note-tab-link:focus {
@@ -50,14 +49,23 @@
   border-bottom: none;
 }
 
+[data-bs-theme="dark"] [data-bw-theme="litera"] .form-control {
+  border: var(--bs-border-width) solid rgba(73, 80, 87, 1);
+}
+
 [data-bw-theme="lumen"] .notebook-nav-container {
-  transform: translateY(3px);
+  transform: translateY(0px);
+  /* lumen has box shadow */
+}
+
+[data-bw-theme="lumen"] .notebook-nav .nav-link {
+  border-bottom: none;
 }
 
 [data-bw-theme="quartz"] .notebook-nav-container {
   padding-bottom: 8px;
   padding-left: 4px;
-  transform: translate(-4px, 0);
+  transform: translateY(0);
 }
 
 [data-bw-theme="quartz"] .notebook-nav .nav-link {

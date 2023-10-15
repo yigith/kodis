@@ -33,7 +33,6 @@ function Notebook() {
   };
 
   const handleTabSelect = (index, event) => {
-    console.log("handleTabSelect", index);
     if (index === "-1") {
       event.preventDefault();
       handleNewTabSelect(index, event);
