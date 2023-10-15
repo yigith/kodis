@@ -5,17 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
-function Notebook({ onCreated }) {
+function Notebook({ onCreated, initialNotes, code }) {
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [slug, setSlug] = useState(null);
-  const [remoteNotes, setRemoteNotes] = useState([]);
-  const [notes, setNotes] = useState([{
+  const [slug, setSlug] = useState(code);
+  const [remoteNotes, setRemoteNotes] = useState(initialNotes);
+  const [notes, setNotes] = useState(initialNotes || [{
     title: 'Note 1',
-    content: 'abc'
-  },
-  {
-    title: 'Note 2',
-    content: 'def'
+    content: ''
   }]);
   const [activeNote, setActiveNote] = useState(notes[0]);
   const [activeKey, setActiveKey] = useState(0);
@@ -28,9 +24,8 @@ function Notebook({ onCreated }) {
     setNotes(newNotes);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post(`${baseUrl}/Notebook/Create`, { notes: toDictionary(notes) })
+  const createNotes = async () => {
+    await axios.post(`${baseUrl}/Notebook/Create`, { notes: toDictionary(notes) })
       .then((response) => {
         setRemoteNotes(response.data.notes);
         setSlug(response.data.slug);
@@ -39,6 +34,20 @@ function Notebook({ onCreated }) {
           onCreated(response.data.slug);
         }
       });
+  };
+
+  const updateNotes = async () => {
+  
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (slug) {
+      updateNotes();
+    } else {
+      createNotes();
+    }
   };
 
   const handleTabSelect = (index, event) => {
@@ -50,6 +59,7 @@ function Notebook({ onCreated }) {
 
     setActiveNote(notes[index]);
     setActiveKey(index);
+    textareaRef.current.focus();
   };
 
   const handleNewTabSelect = (index, event) => {
@@ -105,7 +115,7 @@ function Notebook({ onCreated }) {
         </div>
 
         <Form.Group className="mb-2 flex-fill">
-          {activeNote && <Form.Control ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
+          {activeNote && <Form.Control autoFocus ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
             value={activeNote.content}
             onChange={handleContentChange} />}
         </Form.Group>

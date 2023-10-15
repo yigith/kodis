@@ -2,13 +2,14 @@ import { faCopy, faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
+import "./NavbarLinkCopier.css";
 
-export default function NavbarLinkCopier({ url }) {
+export default function NavbarLinkCopier({ code }) {
   const [tooltip, setTooltip] = useState("Copy Link");
 
   const handleClick = (e) => {
     e.preventDefault();
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(`https://kod.is/${code}`);
     setTooltip("Copied!");
   };
 
@@ -17,18 +18,18 @@ export default function NavbarLinkCopier({ url }) {
   };
 
   return (
-    <Form className='me-2'>
-      <InputGroup size='sm' className='copy-url-textbox-container'>
-        <span className='copy-url-textbox-icon'>
-          <FontAwesomeIcon icon={faLink} />
-        </span>
-        <Form.Control value={url} readOnly />
+    <>
+      <InputGroup className="d-flex justify-content-center">
+        <InputGroup.Text className="bg-dark">
+          kod.is{code && `/${code}`}
+        </InputGroup.Text>
         <OverlayTrigger onExited={handleExit} trigger={["hover", "focus"]} overlay={<Tooltip id="tt-copy-link">{tooltip}</Tooltip>} placement='bottom'>
-          <Button variant="outline-secondary" onClick={handleClick}>
+          <Button size="sm" variant="light" onClick={handleClick}>
             <FontAwesomeIcon icon={faCopy} />
           </Button>
         </OverlayTrigger>
       </InputGroup>
-    </Form>
+    </>
+
   );
 }

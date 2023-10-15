@@ -33,28 +33,3 @@ body {
   background-color: rgba(0, 0, 0, .25);
 }
 
-.copy-url-textbox-container {
-  position: relative;
-}
-
-.copy-url-textbox-icon {
-  display: flex;
-  align-items: center;
-  margin: auto 0;
-  position: absolute;
-  left: 3px;
-  bottom: 0;
-  top: 0;
-  color: var(--bs-secondary);
-  z-index: 99;
-  font-size: .8em;
-}
-
-.copy-url-textbox-icon>svg {
-  transform: rotate(-15deg);
-}
-
-.copy-url-textbox-container.input-group-sm>.form-control {
-  padding-left: 1.3rem;
-  width: 20ch;
-}
