@@ -13,6 +13,9 @@
 
 .textarea-content {
   height: 100%;
+}
+
+body:not([data-bw-theme="quartz"]) .textarea-content {
   border-top-left-radius: 0;
 }
 
