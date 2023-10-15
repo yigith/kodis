@@ -3,8 +3,12 @@ import "./Notebook.css";
 import React, { useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
-function Notebook() {
+function Notebook({ onCreated }) {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const [slug, setSlug] = useState(null);
+  const [remoteNotes, setRemoteNotes] = useState([]);
   const [notes, setNotes] = useState([{
     title: 'Note 1',
     content: 'abc'
@@ -18,18 +22,23 @@ function Notebook() {
   const textareaRef = useRef(null);
   const newNoteLinkRef = useRef(null);
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
-
   const handleContentChange = (event) => {
     const newNotes = [...notes];
     newNotes[activeKey].content = event.target.value;
     setNotes(newNotes);
   };
 
-  const handleSave = () => {
-    // Save the title and content to a database or file
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post(`${baseUrl}/Notebook/Create`, { notes: toDictionary(notes) })
+      .then((response) => {
+        setRemoteNotes(response.data.notes);
+        setSlug(response.data.slug);
+        setNotes([...response.data.notes]);
+        if (onCreated) {
+          onCreated(response.data.slug);
+        }
+      });
   };
 
   const handleTabSelect = (index, event) => {
@@ -73,7 +82,7 @@ function Notebook() {
 
   return (
     <div className="Notebook">
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <div className="notebook-nav-container">
           <Nav activeKey={activeKey} variant="tabs" className="notebook-nav mt-2" onSelect={handleTabSelect}>
             {
@@ -107,5 +116,13 @@ function Notebook() {
     </div>
   );
 }
+
+function toDictionary(notes) {
+  const dictionary = {};
+  notes.forEach((note, index) => {
+    dictionary[note.title] = note.content;
+  });
+  return dictionary;
+};
 
 export default Notebook;

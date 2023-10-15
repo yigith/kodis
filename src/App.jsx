@@ -36,6 +36,12 @@ function App() {
     navigate("/new");
   };
 
+  const handleCreated = (code) => {
+    setNotebookCode(code);
+    setAppMode(AppModes.Editing);
+    navigate(`/${code}`);
+  }
+
   return (
     <div className='App'>
 
@@ -54,7 +60,7 @@ function App() {
       <Container fluid="xxl" className='flex-fill'>
         {is(AppModes.StartScreen) && <StartScreen onNotebookCodeSubmit={handleNotebookCodeSubmit} onCreateSubmit={handleCreateSubmit} />}
         {is(AppModes.Loading) && <Loading />}
-        {is(AppModes.Creating) && <Notebook />}
+        {(is(AppModes.Creating) || is(AppModes.Editing)) && <Notebook onCreated={handleCreated} />}
         {/* <Link to="/">Home</Link> */}
       </Container>
     </div>
