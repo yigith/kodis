@@ -25,6 +25,12 @@ function App() {
   const [notebookCode, setNotebookCode] = useState(slug);
   const is = (mode) => appMode === mode;
 
+  // back button case
+  if (!slug && !is(AppModes.StartScreen)) {
+    setAppMode(AppModes.StartScreen);
+    return null;  
+  }
+
   const handleNotebookCodeSubmit = (code) => {
     setNotebookCode(code);
     setAppMode(AppModes.Loading);
@@ -44,7 +50,6 @@ function App() {
 
   return (
     <div className='App'>
-
       <Navbar className='bg-primary' data-bs-theme="dark">
         <Container fluid="xxl">
           <NavbarBrand />

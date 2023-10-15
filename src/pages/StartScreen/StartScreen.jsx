@@ -23,7 +23,7 @@ function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
           <StartScreenCard headerTitle='I already have a code..' buttonText='Open' onSubmit={handleCodeSubmit}>
             <Form.Group>
               <Form.Label>Notebook Code</Form.Label>
-              <Form.Control size="lg" type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
+              <Form.Control autoFocus size="lg" type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
             </Form.Group>
           </StartScreenCard>
         </Col>
