@@ -10,55 +10,58 @@ import Loading from './components/Loading/Loading';
 import Notebook from './pages/Notebook/Notebook';
 import ThemePicker from './components/ThemePicker/ThemePicker';
 import axios from 'axios';
+import NotFound from './pages/NotFound/NotFound';
 
 const AppModes = {
   Loading: 0,
   StartScreen: 1,
   Creating: 2,
-  Editing: 3,
-  NotFound: 4
+  Editing: 3
 };
 
 function App() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const { path } = useParams();
   const navigate = useNavigate();
-  const [appMode, setAppMode] = useState(path == "new" ? AppModes.Creating : path ? AppModes.Loading : AppModes.StartScreen);
+  const savedCode = localStorage.getItem("notebookCode");
+  const [appMode, setAppMode] = useState(path == "new" ? AppModes.Creating : (path || savedCode) ? AppModes.Loading : AppModes.StartScreen);
   const [notebookCode, setNotebookCode] = useState(null);
   const [notes, setNotes] = useState(null);
   const is = (mode) => appMode === mode;
 
   // back button case
-  if (!path && !is(AppModes.StartScreen)) {
+  if (!path && (is(AppModes.Editing) || is(AppModes.Creating))) {
     setAppMode(AppModes.StartScreen);
-    return null;  
+    return null;
   }
 
   useEffect(() => {
-    if (path) {
-      openNotebookIfPathIsCode();
+    if (!path && savedCode && is(AppModes.Loading)) {
+      openNotebook(savedCode);
+    }
+    else if (path && is(AppModes.Loading)) {
+      openNotebook(path);
     }
   }, []);
 
-  const openNotebookIfPathIsCode = (code) => {
-    if (!code)
-      code = path;
-
+  const openNotebook = (code) => {
     axios.get(`${baseUrl}/Notebook/${code}`)
       .then((response) => {
+        localStorage.setItem("notebookCode", response.data.slug);
         setNotes(response.data.notes);
         setNotebookCode(response.data.slug);
         setAppMode(AppModes.Editing);
-        navigate(`/${response.data.slug}`);
+        if (path !== response.data.slug)
+          navigate(`/${response.data.slug}`);
       })
       .catch((error) => {
-        setAppMode(AppModes.NotFound);
+        navigate("/404");
       });
   };
 
   const handleNotebookCodeSubmit = (code) => {
     setAppMode(AppModes.Loading);
-    openNotebookIfPathIsCode(code);    
+    openNotebook(code);
   };
 
   const handleCreateSubmit = () => {
@@ -67,10 +70,19 @@ function App() {
   };
 
   const handleCreated = (code) => {
+    localStorage.setItem("notebookCode", code);
     setNotebookCode(code);
     setAppMode(AppModes.Editing);
     navigate(`/${code}`);
-  }  
+  }
+
+  const handleExitClick = () => {
+    localStorage.removeItem("notebookCode");
+    setAppMode(AppModes.StartScreen);
+    setNotebookCode(null);
+    setNotes(null);
+    navigate("/");
+  };
 
   return (
     <div className='App'>
@@ -89,8 +101,7 @@ function App() {
       <Container fluid="xxl" className='flex-fill'>
         {is(AppModes.StartScreen) && <StartScreen onNotebookCodeSubmit={handleNotebookCodeSubmit} onCreateSubmit={handleCreateSubmit} />}
         {is(AppModes.Loading) && <Loading />}
-        {(is(AppModes.Creating) || is(AppModes.Editing)) && <Notebook onCreated={handleCreated} initialNotes={notes} slug={notebookCode} />}
-        {is(AppModes.NotFound) && <h1>Not Found</h1>}
+        {(is(AppModes.Creating) || is(AppModes.Editing)) && <Notebook onCreated={handleCreated} initialNotes={notes} code={notebookCode} onExitClick={handleExitClick} />}
       </Container>
     </div>
   );

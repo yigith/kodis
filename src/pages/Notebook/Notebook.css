@@ -44,6 +44,10 @@ body:not([data-bw-theme="quartz"]) .textarea-content {
   margin-bottom: 0;
 }
 
+[data-bw-theme="cerulean"] .notebook-nav-container {
+  transform: translateY(2px);
+}
+
 [data-bw-theme="cyborg"] .notebook-nav-container {
   transform: translateY(0);
 }

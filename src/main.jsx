@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import './index.css'
 import App from './App.jsx'
+import NotFound from './pages/NotFound/NotFound';
 
 
 const router = createBrowserRouter([
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
     path: "/:path?",
     element: <App />,
   },
+  {
+    path: "404",
+    element: <NotFound />,
+  }
 ]);
 
 document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('theme') || 'light');
