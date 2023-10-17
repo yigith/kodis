@@ -1,24 +1,37 @@
+import { AppContext } from "../../AppContext";
 import { Button, Form, Nav } from "react-bootstrap";
 import "./Notebook.css";
-import React, { useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRightFromBracket, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import { redirect, useLoaderData, useNavigate, useNavigation } from "react-router-dom";
 
 
-function Notebook({ onCreated, initialNotes, code, onExitClick }) {
-  const emptyNote = { title: 'Note 1', content: '' };
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-  const [slug, setSlug] = useState(code);
-  const [remoteNotes, setRemoteNotes] = useState(initialNotes ? deepCopy(initialNotes) : []);
-  const [notes, setNotes] = useState(initialNotes ?? [emptyNote]);
-  const [activeNote, setActiveNote] = useState(notes[0]);
-  const [activeKey, setActiveKey] = useState(0);
+function Notebook({ mode }) {
+  const data = useLoaderData();
+  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const [slug, setSlug] = useState(data.notebook.slug);
+  const [remoteNotes, setRemoteNotes] = useState(deepCopy(data.notebook.notes));
+  const initialNotes = deepCopy(data.notebook.notes);
+  const [notes, setNotes] = useState(initialNotes);
+  const [activeKey, setActiveKey] = useState(initialNotes.length > -1 ? 0 : -1);
+  const [created, setCreated] = useState(false);
   const textareaRef = useRef(null);
   const newNoteLinkRef = useRef(null);
+  const appContext = useContext(AppContext);
+
+  useEffect(() => {
+    if (created) {
+      console.log("navigating to: ", `/${slug}`);
+      navigate(`/${slug}`, { replace: true });
+    }
+  }, [appContext.appState.created]);
 
   const handleContentChange = (event) => {
-    const newNotes = [...notes];
+    const newNotes = deepCopy(notes);
     newNotes[activeKey].content = event.target.value;
     setNotes(newNotes);
   };
@@ -26,12 +39,12 @@ function Notebook({ onCreated, initialNotes, code, onExitClick }) {
   const createNotes = () => {
     axios.post(`${baseUrl}/Notebook/Create`, { notes: toDictionary(notes) })
       .then((response) => {
-        setRemoteNotes(deepCopy(response.data.notes));
+        localStorage.setItem("notebookCode", response.data.slug);
         setSlug(response.data.slug);
+        setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
-        if (onCreated) {
-          onCreated(response.data.slug);
-        }
+        setCreated(true);
+        appContext.setAppState({ ...appContext.appState, created: true, createdNotebook: response.data });
       });
   };
 
@@ -56,13 +69,10 @@ function Notebook({ onCreated, initialNotes, code, onExitClick }) {
       }
     }
 
-    console.log("updates", updates);
-
     axios.post(`${baseUrl}/Notebook/Update/${slug}`, { slug, notes: updates })
       .then((response) => {
         setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
-        console.log("response", response.data);
       });
   };
 
@@ -83,28 +93,25 @@ function Notebook({ onCreated, initialNotes, code, onExitClick }) {
       return;
     }
 
-    setActiveNote(notes[index]);
     setActiveKey(index);
-    textareaRef.current.focus();
   };
 
   const handleNewTabSelect = (index, event) => {
     const newNotes = [...notes];
     newNotes.push({ title: `Note ${newNotes.length + 1}`, content: '' });
     setNotes(newNotes);
-    setActiveNote(newNotes[newNotes.length - 1]);
     setActiveKey(newNotes.length - 1);
     newNoteLinkRef.current.blur();
     textareaRef.current.focus();
   };
 
   const promptForNewTitle = () => {
-    let newTitle = prompt("Enter a new title", activeNote.title) ?? "";
+    let newTitle = prompt("Enter a new title", notes[activeKey].title) ?? "";
     newTitle = newTitle.trim();
 
     if (newTitle) {
       const newNotes = [...notes];
-      newNotes[Number(activeKey)].title = newTitle;
+      newNotes[activeKey].title = newTitle;
       setNotes(newNotes);
     }
   };
@@ -125,12 +132,11 @@ function Notebook({ onCreated, initialNotes, code, onExitClick }) {
     setNotes(newNotes);
     const newActiveKey = Math.min(activeKey, newNotes.length - 1);
     setActiveKey(newActiveKey);
-    setActiveNote(newNotes[newActiveKey]);
   };
 
   const handleExitClick = () => {
-    if (onExitClick)
-      onExitClick();
+    localStorage.removeItem("notebookCode");
+    navigate("/");
   };
 
   return (
@@ -158,8 +164,8 @@ function Notebook({ onCreated, initialNotes, code, onExitClick }) {
         </div>
 
         <Form.Group className="mb-2 flex-fill">
-          {activeNote && <Form.Control autoFocus ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
-            value={activeNote.content}
+          {activeKey > -1 && <Form.Control autoFocus ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
+            value={notes[activeKey].content}
             onChange={handleContentChange} />}
         </Form.Group>
         <div className="d-flex mb-2">
@@ -176,6 +182,33 @@ function Notebook({ onCreated, initialNotes, code, onExitClick }) {
       </Form>
     </div>
   );
+}
+
+export async function notebookLoader(params, request, appState) {
+  console.log("loader: ", params, request, appState)
+
+  if (appState?.created) {
+    return { notebook: appState.createdNotebook };
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const { path } = params;
+
+  if (path) {
+    const response = await axios.get(`${baseUrl}/Notebook/${path}`);
+    
+    // if not found, redirect to 404
+    if (!response.status === 404) {
+      return redirect("/404");
+    }
+
+    return { notebook: response.data };
+  }
+  else {
+    return { notebook: { slug: null, notes: [{ title: 'Note 1', content: '' }] } };
+  }
 }
 
 function toDictionary(notes) {

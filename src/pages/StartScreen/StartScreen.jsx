@@ -2,22 +2,27 @@ import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
 import { useState } from 'react';
+import { redirect, useNavigate, useNavigation } from 'react-router-dom';
+import axios from 'axios';
+import LoadingSpinner from '/src/components/LoadingSpinner/LoadingSpinner';
 
-function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
+function StartScreen() {
+  const navigation = useNavigation();
+  const isLoading = navigation.state !== 'idle';
+  const navigate = useNavigate();
   const [notebookCode, setNotebookCode] = useState('');
 
   const handleCodeSubmit = () => {
-    if (onNotebookCodeSubmit)
-      onNotebookCodeSubmit(notebookCode);
+    navigate(`/${notebookCode}`);
   };
 
   const handleCreateClick = () => {
-    if (onCreateSubmit)
-      onCreateSubmit();
+    navigate("/new");
   };
 
   return (
     <div className="StartScreen">
+      {isLoading && <LoadingSpinner />}
       <Row xs={1} md={2} className='gy-3 gx-md-4 justify-content-center'>
         <Col sm={10}>
           <StartScreenCard headerTitle='I already have a code..' buttonText='Open' onSubmit={handleCodeSubmit}>
@@ -35,6 +40,14 @@ function StartScreen({onNotebookCodeSubmit, onCreateSubmit}) {
       </Row>
     </div>
   );
+}
+
+export async function startScreenLoader() {
+  const slug = localStorage.getItem("notebookCode");
+  if (slug) {
+    return redirect(`/${slug}`);
+  }
+  return null;
 }
 
 export default StartScreen;
