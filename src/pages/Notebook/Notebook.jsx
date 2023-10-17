@@ -125,7 +125,8 @@ function Notebook({ mode }) {
 
   const promptForNewTitle = () => {
 
-    Swal.fire({
+    MySwal.fire({
+      heightAuto: false,
       title: 'A New Title',
       input: 'text',
       inputAttributes: {
