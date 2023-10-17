@@ -12,8 +12,7 @@ import Swal from "sweetalert2";
 
 function Notebook({ mode }) {
   const MySwal = withReactContent(Swal);
-  const Toast = Swal.mixin({
-    heightAuto: false,
+  const Toast = MySwal.mixin({
     width: "18em",
     toast: true,
     position: 'center',
@@ -54,6 +53,7 @@ function Notebook({ mode }) {
         setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
         Toast.fire({
+          heightAuto: false,
           icon: 'success',
           title: 'Notebook created.'
         })
