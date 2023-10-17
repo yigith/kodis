@@ -3,19 +3,21 @@ import { Container, Nav, Navbar } from 'react-bootstrap';
 import ColorModeChanger from './components/ColorModeChanger/ColorModeChanger';
 import NavbarLinkCopier from './components/NavbarLinkCopier/NavbarLinkCopier';
 import NavbarBrand from './components/NavbarBrand/NavbarBrand';
-import { Outlet} from 'react-router-dom';
+import { Outlet, useParams} from 'react-router-dom';
 import ThemePicker from './components/ThemePicker/ThemePicker';
 
 
 
 function App({ history }) {
 
+  const { path } = useParams();
+  
   return (
     <div className='App'>
       <Navbar className='bg-primary' data-bs-theme="dark">
         <Container fluid="xxl">
           <NavbarBrand />
-          {/* {is(AppModes.Editing) && <NavbarLinkCopier code={notebookCode} />} */}
+          {path && <NavbarLinkCopier code={path} />}
           <Navbar.Collapse id="basic-navbar-nav">
             <ColorModeChanger />
             <Nav>

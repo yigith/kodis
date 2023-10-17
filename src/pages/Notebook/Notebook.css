@@ -79,6 +79,12 @@ body:not([data-bw-theme="quartz"]) .textarea-content {
   border-bottom: none;
 }
 
+
+
+[data-bs-theme="dark"] [data-bw-theme="sandstone"]  .nav-tabs .nav-link.active {
+  color: #8E8C7B;
+}
+
 [data-bw-theme="sketchy"] .notebook-nav-container {
   padding-bottom: 8px;
 }

@@ -6,9 +6,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRightFromBracket, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { redirect, useLoaderData, useNavigate, useNavigation } from "react-router-dom";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
 
 
 function Notebook({ mode }) {
+  const MySwal = withReactContent(Swal);
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
   const data = useLoaderData();
   const navigate = useNavigate();
   const navigation = useNavigation();
@@ -37,6 +51,10 @@ function Notebook({ mode }) {
         setSlug(response.data.slug);
         setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
+        Toast.fire({
+          icon: 'success',
+          title: 'Notebook created successfully!'
+        })
         navigate(`/${response.data.slug}`, { replace: true });
       });
   };
@@ -66,6 +84,11 @@ function Notebook({ mode }) {
       .then((response) => {
         setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
+        
+        Toast.fire({
+          icon: 'success',
+          title: 'Notebook saved successfully!'
+        })
       });
   };
 
@@ -99,14 +122,26 @@ function Notebook({ mode }) {
   };
 
   const promptForNewTitle = () => {
-    let newTitle = prompt("Enter a new title", notes[activeKey].title) ?? "";
-    newTitle = newTitle.trim();
 
-    if (newTitle) {
-      const newNotes = [...notes];
-      newNotes[activeKey].title = newTitle;
-      setNotes(newNotes);
-    }
+    Swal.fire({
+      title: 'A New Title',
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Ok',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      const newTitle = result.value?.trim();
+      if (result.isConfirmed && newTitle) {
+        const newNotes = [...notes];
+        newNotes[activeKey].title = newTitle;
+        setNotes(newNotes);
+      }
+    })
+
+
   };
 
   const handleNavLinkClick = (event, index) => {
@@ -192,6 +227,7 @@ export async function notebookLoader(params, request, refAppContext) {
   if (path) {
     try {
       const response = await axios.get(`${baseUrl}/Notebook/${path}`);
+      localStorage.setItem("notebookCode", response.data.slug);
       return { notebook: response.data };
     }
     catch (error) {

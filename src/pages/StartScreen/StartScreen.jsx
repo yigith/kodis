@@ -1,7 +1,7 @@
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { redirect, useNavigate, useNavigation } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '/src/components/LoadingSpinner/LoadingSpinner';
@@ -10,22 +10,23 @@ import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 
 function StartScreen() {
-  const MySwal = withReactContent(Swal)
+  const MySwal = withReactContent(Swal);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const appContext = useContext(AppContext);
-  const navigation = useNavigation();
-  const isLoading = navigation.state !== 'idle';
   const navigate = useNavigate();
   const [notebookCode, setNotebookCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleCodeSubmit = () => {
+  const handleCodeSubmit = async () => {
+    setIsLoading(true);
     axios.get(`${baseUrl}/Notebook/${notebookCode}`)
     .then((response) => {
       localStorage.setItem('notebookCode', response.data.slug);
       appContext.current.value = { loaded: true, notebook: response.data };
+      setIsLoading(false);
       navigate(`/${response.data.slug}`, { replace: true });
     }).catch((error) => {
-        console.log(error);
+        setIsLoading(false);
         MySwal.fire({
           icon: "error",
           title: "Not Found!",
