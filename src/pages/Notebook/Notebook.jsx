@@ -129,6 +129,7 @@ function Notebook({ mode }) {
       heightAuto: false,
       title: 'A New Title',
       input: 'text',
+      inputValue: notes[activeKey].title,
       inputAttributes: {
         autocapitalize: 'off'
       },
