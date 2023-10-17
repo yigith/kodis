@@ -6,8 +6,11 @@ import { redirect, useNavigate, useNavigation } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '/src/components/LoadingSpinner/LoadingSpinner';
 import { AppContext } from '/src/AppContext';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 
 function StartScreen() {
+  const MySwal = withReactContent(Swal)
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const appContext = useContext(AppContext);
   const navigation = useNavigation();
@@ -23,7 +26,11 @@ function StartScreen() {
       navigate(`/${response.data.slug}`, { replace: true });
     }).catch((error) => {
         console.log(error);
-        alert("Notebook not found");
+        MySwal.fire({
+          icon: "error",
+          title: "Not Found!",
+          text: "It may have expired or never existed."
+        });
       });
   };
 
