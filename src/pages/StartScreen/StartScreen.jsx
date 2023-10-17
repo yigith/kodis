@@ -1,19 +1,30 @@
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { redirect, useNavigate, useNavigation } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '/src/components/LoadingSpinner/LoadingSpinner';
+import { AppContext } from '/src/AppContext';
 
 function StartScreen() {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const appContext = useContext(AppContext);
   const navigation = useNavigation();
   const isLoading = navigation.state !== 'idle';
   const navigate = useNavigate();
   const [notebookCode, setNotebookCode] = useState('');
 
   const handleCodeSubmit = () => {
-    navigate(`/${notebookCode}`);
+    axios.get(`${baseUrl}/Notebook/${notebookCode}`)
+    .then((response) => {
+      localStorage.setItem('notebookCode', response.data.slug);
+      appContext.current.value = { loaded: true, notebook: response.data };
+      navigate(`/${response.data.slug}`, { replace: true });
+    }).catch((error) => {
+        console.log(error);
+        alert("Notebook not found");
+      });
   };
 
   const handleCreateClick = () => {

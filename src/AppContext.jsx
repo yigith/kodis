@@ -1,3 +1,3 @@
 import { createContext } from "react";
 
-export const AppContext = createContext({ test: "test"});
+export const AppContext = createContext({ loaded: false, notebook: null});

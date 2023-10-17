@@ -18,17 +18,9 @@ function Notebook({ mode }) {
   const initialNotes = deepCopy(data.notebook.notes);
   const [notes, setNotes] = useState(initialNotes);
   const [activeKey, setActiveKey] = useState(initialNotes.length > -1 ? 0 : -1);
-  const [created, setCreated] = useState(false);
   const textareaRef = useRef(null);
   const newNoteLinkRef = useRef(null);
-  const appContext = useContext(AppContext);
-
-  useEffect(() => {
-    if (created) {
-      console.log("navigating to: ", `/${slug}`);
-      navigate(`/${slug}`, { replace: true });
-    }
-  }, [appContext.appState.created]);
+  const refAppContext = useContext(AppContext);
 
   const handleContentChange = (event) => {
     const newNotes = deepCopy(notes);
@@ -39,12 +31,13 @@ function Notebook({ mode }) {
   const createNotes = () => {
     axios.post(`${baseUrl}/Notebook/Create`, { notes: toDictionary(notes) })
       .then((response) => {
+        refAppContext.current = { loaded: true, notebook: response.data };
+        console.log(refAppContext);
         localStorage.setItem("notebookCode", response.data.slug);
         setSlug(response.data.slug);
         setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
-        setCreated(true);
-        appContext.setAppState({ ...appContext.appState, created: true, createdNotebook: response.data });
+        navigate(`/${response.data.slug}`, { replace: true });
       });
   };
 
@@ -127,7 +120,7 @@ function Notebook({ mode }) {
     const newNotes = [...notes];
     newNotes.splice(activeKey, 1);
     if (newNotes.length === 0) {
-      newNotes.push(emptyNote);
+      newNotes.push({ title: 'Note', content: '' });
     }
     setNotes(newNotes);
     const newActiveKey = Math.min(activeKey, newNotes.length - 1);
@@ -184,30 +177,30 @@ function Notebook({ mode }) {
   );
 }
 
-export async function notebookLoader(params, request, appState) {
-  console.log("loader: ", params, request, appState)
-
-  if (appState?.created) {
-    return { notebook: appState.createdNotebook };
+export async function notebookLoader(params, request, refAppContext) {
+  if (refAppContext?.current.loaded) {
+    const result = { notebook: refAppContext.current.notebook };
+    console.log(refAppContext?.current.loaded, result);
+    refAppContext.current.loaded = false;
+    refAppContext.current.notebook = null;
+    return result;
   }
-
-  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const { path } = params;
 
   if (path) {
-    const response = await axios.get(`${baseUrl}/Notebook/${path}`);
-    
-    // if not found, redirect to 404
-    if (!response.status === 404) {
+    try {
+      const response = await axios.get(`${baseUrl}/Notebook/${path}`);
+      return { notebook: response.data };
+    }
+    catch (error) {
+      console.log(error);
       return redirect("/404");
     }
-
-    return { notebook: response.data };
   }
   else {
-    return { notebook: { slug: null, notes: [{ title: 'Note 1', content: '' }] } };
+    return { notebook: { slug: null, notes: [{ title: 'Note', content: '' }] } };
   }
 }
 

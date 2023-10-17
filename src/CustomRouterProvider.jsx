@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { AppContext } from "./AppContext";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import App from './App.jsx'
@@ -9,7 +9,7 @@ import StartScreen, { startScreenLoader } from './pages/StartScreen/StartScreen'
 import Loading from './components/Loading/Loading';
 
 function CustomRouterProvider() {
-  const [appState, setAppState] = useState({ created: false });
+  const refAppContext = useRef({ loaded: false, notebook: null });
 
   const router = createBrowserRouter([
     {
@@ -33,7 +33,7 @@ function CustomRouterProvider() {
         },
         {
           path: "/:path",
-          loader: async ({ params, request }) => await notebookLoader(params, request, appState),
+          loader: async ({ params, request }) => await notebookLoader(params, request, refAppContext),
           element: <Notebook mode="edit" />
         }
       ]
@@ -41,8 +41,8 @@ function CustomRouterProvider() {
   ]);
 
   return (
-    <AppContext.Provider value={{ appState, setAppState }}>
-      <RouterProvider  router={router} fallbackElement={<Loading />} />
+    <AppContext.Provider value={ refAppContext }>
+      <RouterProvider router={router} fallbackElement={<Loading />} />
     </AppContext.Provider>
   );
 }
