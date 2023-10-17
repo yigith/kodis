@@ -13,10 +13,12 @@ import Swal from "sweetalert2";
 function Notebook({ mode }) {
   const MySwal = withReactContent(Swal);
   const Toast = Swal.mixin({
+    heightAuto: false,
+    width: "18em",
     toast: true,
-    position: 'top-end',
+    position: 'center',
     showConfirmButton: false,
-    timer: 3000,
+    timer: 2000,
     timerProgressBar: true,
     didOpen: (toast) => {
       toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -53,7 +55,7 @@ function Notebook({ mode }) {
         setNotes(response.data.notes);
         Toast.fire({
           icon: 'success',
-          title: 'Notebook created successfully!'
+          title: 'Notebook created.'
         })
         navigate(`/${response.data.slug}`, { replace: true });
       });
@@ -87,7 +89,7 @@ function Notebook({ mode }) {
         
         Toast.fire({
           icon: 'success',
-          title: 'Notebook saved successfully!'
+          title: 'Changes saved!'
         })
       });
   };

@@ -30,7 +30,9 @@ function StartScreen() {
         MySwal.fire({
           icon: "error",
           title: "Not Found!",
-          text: "It may have expired or never existed."
+          text: "It may have expired or never existed.",
+          heightAuto: false,
+          width: "25em"
         });
       });
   };
