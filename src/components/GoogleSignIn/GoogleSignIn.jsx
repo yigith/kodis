@@ -1,11 +1,18 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 
 function GoogleSignIn() {
+
+  useGoogleOneTapLogin({
+    onError: (error) => {
+      console.log(error);
+    }
+  });
+
   const login = useGoogleLogin({
     onSuccess: tokenResponse => {
       // console.log(tokenResponse)
@@ -35,7 +42,7 @@ function GoogleSignIn() {
 
   return (
     <div className='mb-2 mb-sm-4'>
-      <Button onClick={login} size='lg'>
+      <Button onClick={login}>
         <FontAwesomeIcon icon={faGoogle} className='me-2' />
         Sign in with Google
       </Button>

@@ -9,14 +9,14 @@ function StartScreenCard({ headerTitle, buttonText, children, onSubmit}) {
 
   return (
     <Card className='h-100'>
-      <Card.Header as="h4" className='text-center p-sm-2'>{headerTitle}</Card.Header>
+      <Card.Header as="h5" className='text-center'>{headerTitle}</Card.Header>
       <Card.Body>
         <Form className='d-flex flex-column h-100' onSubmit={handleSubmit}>
           <div className="flex-fill d-flex flex-column justify-content-center mt-sm-1 mb-2">
             {children}
           </div>
           <div className='d-grid mt-auto'>
-            <Button size="lg" type="submit">{buttonText}</Button>
+            <Button type="submit">{buttonText}</Button>
           </div>
         </Form>
       </Card.Body>

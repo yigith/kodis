@@ -26,7 +26,6 @@ function App({ history }) {
               <ThemePicker />
               <NavAccountMenu />
             </Nav>
-            <GoogleSignInIcon />
           </Navbar.Collapse>
         </Container>
       </Navbar>
