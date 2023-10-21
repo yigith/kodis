@@ -4,12 +4,23 @@ import { useGoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
+import jwt_decode from "jwt-decode";
 
 function GoogleSignIn() {
 
   useGoogleOneTapLogin({
-    onError: (error) => {
-      console.log(error);
+    onSuccess: (credentialResponse) => {
+      const decoded = jwt_decode(credentialResponse.credential);
+      Swal.fire({
+        icon: "success",
+        title: `Hello ${decoded.name}!`,
+        text: "You have successfully signed in. Soon you will be able to create your own notebook with a fixed code.",
+        heightAuto: false,
+        width: "25em"
+      });
+    },
+    onError: () => {
+      console.log('Login Failed');
     }
   });
 
