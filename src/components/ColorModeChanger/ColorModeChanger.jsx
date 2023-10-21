@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Nav, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export default function ColorModeChanger() {
   const [dark, setDark] = useState(null);
@@ -21,10 +21,12 @@ export default function ColorModeChanger() {
   };
 
   return (
-    <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ ttMessage }</Tooltip>} placement='bottom-end'>
-      <a href="#switch-color-theme" onClick={handleClick} className={`ms-auto me-1 btn-switch-color-them`}>
-        <i className={`bi bi-${dark ? "moon-stars" : "sun"}-fill`}></i>
-      </a>
-    </OverlayTrigger>
+    <Nav.Item>
+      <OverlayTrigger overlay={<Tooltip id="tt-color-mode">{ttMessage}</Tooltip>} placement='bottom-end'>
+        <Nav.Link onClick={handleClick}>
+          <i className={`bi bi-${dark ? "moon-stars" : "sun"}-fill`}></i>
+        </Nav.Link>
+      </OverlayTrigger >
+    </Nav.Item>
   )
 }

@@ -7,6 +7,7 @@ import ErrorPage from './pages/ErrorPage/ErrorPage';
 import Notebook, { notebookLoader } from './pages/Notebook/Notebook';
 import StartScreen, { startScreenLoader } from './pages/StartScreen/StartScreen';
 import Loading from './components/Loading/Loading';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function CustomRouterProvider() {
   const refAppContext = useRef({ loaded: false, notebook: null });
@@ -41,8 +42,10 @@ function CustomRouterProvider() {
   ]);
 
   return (
-    <AppContext.Provider value={ refAppContext }>
-      <RouterProvider router={router} fallbackElement={<Loading />} />
+    <AppContext.Provider value={refAppContext}>
+      <GoogleOAuthProvider clientId="272145913743-86i08ju9ruhdv18foecbrvtrucsntl2f.apps.googleusercontent.com">
+        <RouterProvider router={router} fallbackElement={<Loading />} />
+      </GoogleOAuthProvider>
     </AppContext.Provider>
   );
 }

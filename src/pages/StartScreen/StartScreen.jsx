@@ -9,6 +9,8 @@ import { AppContext } from '/src/AppContext';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 
+import GoogleSignIn from '../../components/GoogleSignIn/GoogleSignIn';
+
 function StartScreen() {
   const MySwal = withReactContent(Swal);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -20,12 +22,12 @@ function StartScreen() {
   const handleCodeSubmit = async () => {
     setIsLoading(true);
     axios.get(`${baseUrl}/Notebook/${notebookCode}`)
-    .then((response) => {
-      localStorage.setItem('notebookCode', response.data.slug);
-      appContext.current.value = { loaded: true, notebook: response.data };
-      setIsLoading(false);
-      navigate(`/${response.data.slug}`, { replace: true });
-    }).catch((error) => {
+      .then((response) => {
+        localStorage.setItem('notebookCode', response.data.slug);
+        appContext.current.value = { loaded: true, notebook: response.data };
+        setIsLoading(false);
+        navigate(`/${response.data.slug}`, { replace: true });
+      }).catch((error) => {
         setIsLoading(false);
         MySwal.fire({
           icon: "error",
@@ -44,7 +46,8 @@ function StartScreen() {
   return (
     <div className="StartScreen">
       {isLoading && <LoadingSpinner />}
-      <Row xs={1} md={2} className='gy-3 gx-md-4 justify-content-center'>
+      <GoogleSignIn />
+      <Row xs={1} md={2} className='gy-2 gy-sm-3 gx-md-4 justify-content-center'>
         <Col sm={10}>
           <StartScreenCard headerTitle='I already have a code..' buttonText='Open' onSubmit={handleCodeSubmit}>
             <Form.Group>
