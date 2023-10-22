@@ -19,8 +19,8 @@ export default function NavbarLinkCopier({ code }) {
 
   return (
     <>
-      <InputGroup className="d-flex justify-content-center">
-        <InputGroup.Text className="bg-dark px-2">
+      <InputGroup size="sm" className="d-flex justify-content-center">
+        <InputGroup.Text className="bg-dark">
           kod.is{code && `/${code}`}
         </InputGroup.Text>
         <OverlayTrigger onExited={handleExit} trigger={["hover", "focus"]} overlay={<Tooltip id="tt-copy-link">{tooltip}</Tooltip>} placement='bottom'>
