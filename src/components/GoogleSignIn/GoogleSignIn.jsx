@@ -1,12 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { useGoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import jwt_decode from "jwt-decode";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
-function GoogleSignIn() {
+function GoogleSignIn({className}) {
 
   useGoogleOneTapLogin({
     onSuccess: (credentialResponse) => {
@@ -52,12 +52,12 @@ function GoogleSignIn() {
   });
 
   return (
-    <div className='mb-2 mb-sm-4'>
-      <Button onClick={login}>
+    <>
+      <Button className={className} variant="primary" onClick={login}>
         <FontAwesomeIcon icon={faGoogle} className='me-2' />
         Sign in with Google
       </Button>
-    </div>
+    </>
   );
 }
 

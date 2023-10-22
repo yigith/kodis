@@ -5,3 +5,16 @@
   align-items: center;
   justify-content: center;
 }
+
+[data-bw-theme="quartz"] .StartScreen .card {
+  --bs-card-spacer-y: .3rem;
+  --bs-card-spacer-x: 1rem;
+}
+
+[data-bw-theme="quartz"] .StartScreen .card-header {
+  --bs-card-cap-padding-y: .8rem;
+}
+
+[data-bw-theme="quartz"] mark {
+  --bs-highlight-bg: rgba(0, 0, 0, .3);
+}

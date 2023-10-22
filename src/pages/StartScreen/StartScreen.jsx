@@ -1,4 +1,4 @@
-import { Button, Card, Col, Form, Row } from 'react-bootstrap';
+import { Alert, Badge, Button, Card, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
 import { useContext, useState } from 'react';
@@ -46,19 +46,39 @@ function StartScreen() {
   return (
     <div className="StartScreen">
       {isLoading && <LoadingSpinner />}
-      <GoogleSignIn />
-      <Row xs={1} md={2} className='gy-2 gy-sm-3 gx-md-4 justify-content-center'>
-        <Col sm={10}>
-          <StartScreenCard headerTitle='I already have a code..' buttonText='Open' onSubmit={handleCodeSubmit}>
-            <Form.Group>
-              <Form.Label>Notebook Code</Form.Label>
-              <Form.Control autoFocus type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
-            </Form.Group>
+      <Row xs={1} md={2} className='col-sm-10 col-md-12 col-lg-10 col-xl-9 gy-2 gy-sm-3 gx-md-4 justify-content-center'>
+        <Col className='d-flex align-items-stretch'>
+          <StartScreenCard className="w-100" headerTitle='Share Your Notes' onSubmit={handleCodeSubmit}>
+            <Card.Text className='flex-fill d-flex text-center align-items-center'>
+              Type the code below to open an existing notebook or create a new one that can be used for 24 hours.
+            </Card.Text>
+            <Card.Text className=' text-center'>
+              Ex: <mark>https://kod.is/a3Bq7D</mark>
+            </Card.Text>
+            <Row className='mt-auto'>
+              <Col sm="6" md="12" lg="7">
+                <InputGroup className='mb-2 mb-sm-0 mb-md-2 mb-lg-0'>
+                  <Form.Control type="text" placeholder="Ex: a3Bq7D" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
+                  <Button type="submit">Open</Button>
+                </InputGroup>
+              </Col>
+              <Col sm="6" md="12" lg="5">
+                <Button onClick={handleCreateClick} className='w-100' type="button">Create New</Button>
+              </Col>
+            </Row>
           </StartScreenCard>
         </Col>
-        <Col sm={10}>
-          <StartScreenCard headerTitle='I want a new one..' buttonText='Create' onSubmit={handleCreateClick}>
-            <Card.Text className='lead text-center'>Share your notes with your friends for <strong>24 hours</strong>!</Card.Text>
+        <Col className='d-flex align-items-stretch'>
+          <StartScreenCard className="w-100" headerTitle='Get Your Own Notebook' onSubmit={handleCreateClick}>
+            <div className='flex-fill d-flex flex-column justify-content-center'>
+              <Card.Text className='text-center'>
+                Create your own notebook with your username for <strong>free</strong> by signing in with Google!
+              </Card.Text>
+              <Card.Text className=' text-center'>
+                Ex: <mark>https://kod.is/@username</mark>
+              </Card.Text>
+            </div>
+            <GoogleSignIn className="mt-2" />
           </StartScreenCard>
         </Col>
       </Row>
