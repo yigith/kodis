@@ -196,7 +196,7 @@ function Notebook({ mode }) {
         </div>
 
         <Form.Group className="mb-2 flex-fill">
-          {activeKey > -1 && <Form.Control autoFocus ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
+          {activeKey > -1 && <Form.Control ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
             value={notes[activeKey].content}
             onChange={handleContentChange} />}
         </Form.Group>
