@@ -1,11 +1,11 @@
 import { AppContext } from "../../AppContext";
 import { Button, Form, Nav } from "react-bootstrap";
 import "./Notebook.css";
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRightFromBracket, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { redirect, useLoaderData, useNavigate, useNavigation } from "react-router-dom";
+import { redirect, useLoaderData, useNavigate } from "react-router-dom";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
@@ -26,7 +26,6 @@ function Notebook({ mode }) {
   })
   const data = useLoaderData();
   const navigate = useNavigate();
-  const navigation = useNavigation();
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [slug, setSlug] = useState(data.notebook.slug);
   const [remoteNotes, setRemoteNotes] = useState(deepCopy(data.notebook.notes));
