@@ -16,7 +16,12 @@ function App() {
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  const [auth, setAuth] = useState({ loggedIn: false, user: null, accessToken, refreshToken });
+  const [auth, setAuth] = useState({ 
+    loggedIn: Boolean(accessToken && refreshToken), 
+    user: accessToken ? jwtDecode(accessToken) : null, 
+    accessToken, 
+    refreshToken 
+  });
   const refAppContext = useRef({ loaded: false, notebook: null });
 
   useEffect(() => {
