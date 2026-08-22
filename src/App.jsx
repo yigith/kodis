@@ -36,7 +36,7 @@ function App() {
       .catch(() => { /* already handled by the interceptor */ });
   }, []);
 
-  const router = createBrowserRouter([
+  const [router] = useState(() => createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
@@ -63,7 +63,7 @@ function App() {
         }
       ]
     }
-  ]);
+  ]));
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
