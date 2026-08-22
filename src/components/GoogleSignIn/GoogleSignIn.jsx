@@ -6,9 +6,11 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { AuthContext } from '../../AuthContext';
 import { useContext } from 'react';
 import api, { apiErrorMessage, authStateFromTokens } from '../../api';
+import { useNavigate } from 'react-router-dom';
 
 function GoogleSignIn({ className }) {
   const { auth, setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const googleLogin = function (relativeUrl, payload) {
     api.post(`/${relativeUrl}`, payload)
@@ -24,6 +26,10 @@ function GoogleSignIn({ className }) {
           text: "You have successfully signed in.",
           heightAuto: false,
           width: "25em"
+        }).then(() => {
+          if (nextAuth.user?.username) {
+            navigate(`/@${nextAuth.user.username.trim().toLowerCase()}`, { replace: true });
+          }
         });
       })
       .catch((error) => {
