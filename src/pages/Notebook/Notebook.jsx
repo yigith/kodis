@@ -27,10 +27,12 @@ function Notebook({ mode }) {
   const data = useLoaderData();
   const navigate = useNavigate();
   const [slug, setSlug] = useState(data.notebook.slug);
+  // remoteNotes sunucudaki gercek hali tutar (fark hesabi icin); notes ise
+  // duzenlenen hali - bir defter sifir notla gelebilir (yeni acilan @username
+  // defteri boyledir) ve editor en az bir not olmadan render edilemez.
   const [remoteNotes, setRemoteNotes] = useState(deepCopy(data.notebook.notes));
-  const initialNotes = deepCopy(data.notebook.notes);
-  const [notes, setNotes] = useState(initialNotes);
-  const [activeKey, setActiveKey] = useState(initialNotes.length > -1 ? 0 : -1);
+  const [notes, setNotes] = useState(withAtLeastOneNote(data.notebook.notes));
+  const [activeKey, setActiveKey] = useState(0);
   const textareaRef = useRef(null);
   const newNoteLinkRef = useRef(null);
   const refAppContext = useContext(AppContext);
@@ -58,7 +60,8 @@ function Notebook({ mode }) {
         localStorage.setItem("notebookCode", response.data.slug);
         setSlug(response.data.slug);
         setRemoteNotes(deepCopy(response.data.notes));
-        setNotes(response.data.notes);
+        setNotes(withAtLeastOneNote(response.data.notes));
+        setActiveKey(0);
         Toast.fire({
           heightAuto: false,
           icon: 'success',
@@ -97,8 +100,10 @@ function Notebook({ mode }) {
 
     api.post(`/Notebook/Update/${slug}`, { notes: updates })
       .then((response) => {
+        const saved = withAtLeastOneNote(response.data.notes);
         setRemoteNotes(deepCopy(response.data.notes));
-        setNotes(response.data.notes);
+        setNotes(saved);
+        setActiveKey((key) => Math.min(key, saved.length - 1));
 
         Toast.fire({
           icon: 'success',
@@ -210,7 +215,7 @@ function Notebook({ mode }) {
         </div>
 
         <Form.Group className="mb-2 flex-fill">
-          {activeKey > -1 && <Form.Control ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
+          {notes[activeKey] && <Form.Control ref={textareaRef} className="textarea-content" as="textarea" placeholder="Write your notes here..."
             value={notes[activeKey].content}
             onChange={handleContentChange} />}
         </Form.Group>
@@ -266,6 +271,12 @@ function toDictionary(notes) {
   });
   return dictionary;
 };
+
+/** An empty notebook still needs one note for the editor to have something to show. */
+function withAtLeastOneNote(notes) {
+  const copy = deepCopy(notes ?? []);
+  return copy.length > 0 ? copy : [{ title: 'Note', content: '' }];
+}
 
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
