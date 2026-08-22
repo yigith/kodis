@@ -1,32 +1,39 @@
 import { useGoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
-import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { AuthContext } from '../../AuthContext';
 import { useContext } from 'react';
+import api, { apiErrorMessage, authStateFromTokens } from '../../api';
 
 function GoogleSignIn({ className }) {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const { auth, setAuth } = useContext(AuthContext);
 
   const googleLogin = function (relativeUrl, payload) {
-    axios.post(`${baseUrl}/${relativeUrl}`, payload)
+    api.post(`/${relativeUrl}`, payload)
       .then((response) => {
-        setAuth({ ...auth, accessToken: response.data.accessToken, refreshToken: response.data.refreshToken });
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
+        // The signed-in user comes from the new access token - reading it off
+        // the previous auth state would still be null on a first sign-in.
+        const nextAuth = authStateFromTokens(response.data);
+        setAuth(nextAuth);
+
         Swal.fire({
           icon: "success",
-          title: `Hello ${auth.user.name}!`,
+          title: nextAuth.user?.name ? `Hello ${nextAuth.user.name}!` : "Welcome!",
           text: "You have successfully signed in.",
           heightAuto: false,
           width: "25em"
         });
       })
       .catch((error) => {
-        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Sign in failed",
+          text: apiErrorMessage(error, "Could not sign you in. Please try again."),
+          heightAuto: false,
+          width: "25em"
+        });
       });
   };
 

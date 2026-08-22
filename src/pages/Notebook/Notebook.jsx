@@ -4,7 +4,7 @@ import "./Notebook.css";
 import React, { useContext, useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRightFromBracket, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import api, { apiErrorMessage } from "../../api";
 import { redirect, useLoaderData, useNavigate } from "react-router-dom";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
@@ -26,7 +26,6 @@ function Notebook({ mode }) {
   })
   const data = useLoaderData();
   const navigate = useNavigate();
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const [slug, setSlug] = useState(data.notebook.slug);
   const [remoteNotes, setRemoteNotes] = useState(deepCopy(data.notebook.notes));
   const initialNotes = deepCopy(data.notebook.notes);
@@ -42,11 +41,20 @@ function Notebook({ mode }) {
     setNotes(newNotes);
   };
 
+  const showError = (error, title) => {
+    MySwal.fire({
+      icon: 'error',
+      title,
+      text: apiErrorMessage(error),
+      heightAuto: false,
+      width: '25em'
+    });
+  };
+
   const createNotes = () => {
-    axios.post(`${baseUrl}/Notebook/Create`, { notes: toDictionary(notes) })
+    api.post(`/Notebook/Create`, { notes: toDictionary(notes) })
       .then((response) => {
         refAppContext.current = { loaded: true, notebook: response.data };
-        console.log(refAppContext);
         localStorage.setItem("notebookCode", response.data.slug);
         setSlug(response.data.slug);
         setRemoteNotes(deepCopy(response.data.notes));
@@ -57,7 +65,8 @@ function Notebook({ mode }) {
           title: 'Notebook created.'
         })
         navigate(`/${response.data.slug}`, { replace: true });
-      });
+      })
+      .catch((error) => showError(error, 'Could not create the notebook'));
   };
 
   const updateNotes = () => {
@@ -75,22 +84,28 @@ function Notebook({ mode }) {
       }
       else {
         const remoteNote = remoteNotes.find((remoteNote) => remoteNote.id === n.id);
-        if (remoteNote.content !== n.content || remoteNote.title !== n.title) {
+        // The note vanished server-side; send it as new rather than sending an
+        // id the API no longer knows, which it now rejects with a 404.
+        if (!remoteNote) {
+          updates.push({ title: n.title, content: n.content });
+        }
+        else if (remoteNote.content !== n.content || remoteNote.title !== n.title) {
           updates.push({ id: n.id, title: n.title, content: n.content });
         }
       }
     }
 
-    axios.post(`${baseUrl}/Notebook/Update/${slug}`, { slug, notes: updates })
+    api.post(`/Notebook/Update/${slug}`, { notes: updates })
       .then((response) => {
         setRemoteNotes(deepCopy(response.data.notes));
         setNotes(response.data.notes);
-        
+
         Toast.fire({
           icon: 'success',
           title: 'Changes saved!'
         })
-      });
+      })
+      .catch((error) => showError(error, 'Could not save your changes'));
   };
 
   const handleSubmit = (e) => {
@@ -215,31 +230,32 @@ function Notebook({ mode }) {
   );
 }
 
-export async function notebookLoader(params, request, refAppContext) {
+export async function notebookLoader(params, refAppContext) {
   if (refAppContext?.current.loaded) {
     const result = { notebook: refAppContext.current.notebook };
-    console.log(refAppContext?.current.loaded, result);
     refAppContext.current.loaded = false;
     refAppContext.current.notebook = null;
     return result;
   }
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  const { path } = params;
+  const path = params?.path;
 
-  if (path) {
-    try {
-      const response = await axios.get(`${baseUrl}/Notebook/${path}`);
-      localStorage.setItem("notebookCode", response.data.slug);
-      return { notebook: response.data };
-    }
-    catch (error) {
-      console.log(error);
-      return redirect("/404");
-    }
-  }
-  else {
+  if (!path) {
     return { notebook: { slug: null, notes: [{ title: 'Note', content: '' }] } };
+  }
+
+  try {
+    const response = await api.get(`/Notebook/${path}`);
+    localStorage.setItem("notebookCode", response.data.slug);
+    return { notebook: response.data };
+  }
+  catch (error) {
+    // Anonymous notebooks are deleted after 24 hours. Without this the stored
+    // code keeps redirecting the start screen straight back to a dead notebook.
+    if (localStorage.getItem("notebookCode") === path) {
+      localStorage.removeItem("notebookCode");
+    }
+    return redirect("/404");
   }
 }
 

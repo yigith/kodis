@@ -3,17 +3,16 @@ import './StartScreen.css';
 import StartScreenCard from './StartScreenCard';
 import { useContext, useState } from 'react';
 import { redirect, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import LoadingSpinner from '/src/components/LoadingSpinner/LoadingSpinner';
 import { AppContext } from '/src/AppContext';
 import withReactContent from 'sweetalert2-react-content';
 import Swal from 'sweetalert2';
 import GoogleSignIn from '../../components/GoogleSignIn/GoogleSignIn';
 import { AuthContext } from '../../AuthContext';
+import api, { apiErrorMessage, authStateFromTokens } from '../../api';
 
 function StartScreen() {
   const MySwal = withReactContent(Swal);
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
   const appContext = useContext(AppContext);
   const { auth, setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -23,22 +22,49 @@ function StartScreen() {
 
   const handleCodeSubmit = async () => {
     setIsLoading(true);
-    axios.get(`${baseUrl}/Notebook/${notebookCode}`)
-      .then((response) => {
-        localStorage.setItem('notebookCode', response.data.slug);
-        appContext.current.value = { loaded: true, notebook: response.data };
-        setIsLoading(false);
-        navigate(`/${response.data.slug}`, { replace: true });
-      }).catch((error) => {
-        setIsLoading(false);
-        MySwal.fire({
-          icon: "error",
-          title: "Not Found!",
-          text: "It may have expired or never existed.",
-          heightAuto: false,
-          width: "25em"
-        });
+
+    try {
+      const response = await api.get(`/Notebook/${notebookCode}`);
+      localStorage.setItem('notebookCode', response.data.slug);
+      appContext.current = { loaded: true, notebook: response.data };
+      navigate(`/${response.data.slug}`, { replace: true });
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: error.response?.status === 401 ? "Password required" : "Not Found!",
+        text: error.response?.status === 401
+          ? "This notebook is password protected."
+          : apiErrorMessage(error, "It may have expired or never existed."),
+        heightAuto: false,
+        width: "25em"
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveUsernameClick = async () => {
+    setIsLoading(true);
+
+    try {
+      // The username is baked into the access token, so the API hands back a
+      // fresh pair; storing it is what makes the new handle visible.
+      const response = await api.post('/Account/SetUsername', { username: newUsername });
+      setAuth(authStateFromTokens(response.data));
+
+      localStorage.removeItem('notebookCode');
+      navigate(`/@${newUsername.trim().toLowerCase()}`);
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: error.response?.status === 409 ? "Username taken" : "Could not save",
+        text: apiErrorMessage(error, "Please choose a different username."),
+        heightAuto: false,
+        width: "25em"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreateClick = () => {
@@ -57,7 +83,7 @@ function StartScreen() {
             <Row className='mt-auto'>
               <Col sm="6" md="12" lg="7">
                 <InputGroup className='mb-2 mb-sm-0 mb-md-2 mb-lg-0'>
-                  <Form.Control type="text" placeholder="AbcXy1" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
+                  <Form.Control type="text" placeholder="AbcXy123" value={notebookCode} onChange={e => setNotebookCode(e.target.value)} required />
                   <Button type="submit">Open</Button>
                 </InputGroup>
               </Col>
@@ -94,7 +120,14 @@ function StartScreen() {
                     <InputGroup.Text>
                       kod.is/@
                     </InputGroup.Text>
-                    <Form.Control type="text" placeholder="username.." value={newUsername} onChange={e => setNewUsername(e.target.value)} required />
+                    <Form.Control
+                      type="text"
+                      placeholder="username.."
+                      value={newUsername}
+                      onChange={e => setNewUsername(e.target.value)}
+                      pattern="[a-zA-Z][a-zA-Z0-9]{4,19}"
+                      title="5-20 characters: start with a letter, then letters or digits only."
+                      required />
                     <Button type="submit">Save</Button>
                   </InputGroup>
                 </Col>

@@ -9,48 +9,32 @@ import StartScreen, { startScreenLoader } from './pages/StartScreen/StartScreen'
 import Loading from './components/Loading/Loading';
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthContext } from "./AuthContext";
-import axios from "axios";
-import jwtDecode from "jwt-decode";
+import api, { authStateFromStorage, setSessionLostHandler, signedOut } from "./api";
+
+const GOOGLE_CLIENT_ID = "272145913743-86i08ju9ruhdv18foecbrvtrucsntl2f.apps.googleusercontent.com";
 
 function App() {
-  const accessToken = localStorage.getItem('accessToken');
-  const refreshToken = localStorage.getItem('refreshToken');
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  const [auth, setAuth] = useState({ 
-    loggedIn: Boolean(accessToken && refreshToken), 
-    user: accessToken ? jwtDecode(accessToken) : null, 
-    accessToken, 
-    refreshToken 
-  });
+  const [auth, setAuth] = useState(authStateFromStorage);
   const refAppContext = useRef({ loaded: false, notebook: null });
 
+  // The axios interceptor signs us out when a refresh fails; this is how that
+  // gets reflected in React state.
   useEffect(() => {
+    setSessionLostHandler(() => setAuth(signedOut));
+  }, []);
 
-    if (accessToken && refreshToken) {
-      // axios bearer
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-
-      axios.post(`${baseUrl}/Account/Check`)
-        .then((response) => {
-          setAuth({ loggedIn: true, user: jwtDecode(accessToken), accessToken, refreshToken });
-          console.log(jwtDecode(accessToken));
-        })
-        .catch((error) => {
-          axios.post(`${baseUrl}/Account/RefreshLogin`, { refreshToken })
-            .then((response) => {
-              localStorage.setItem('accessToken', response.data.accessToken);
-              localStorage.setItem('refreshToken', response.data.refreshToken);
-              setAuth({ ...auth, accessToken: response.data.accessToken, refreshToken: response.data.refreshToken });
-              console.log(jwtDecode(response.data.accessToken));
-            })
-            .catch((error) => {
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('refreshToken');
-              setAuth({ loggedIn: false, user: null, accessToken: null, refreshToken: null });
-            });
-        });
+  // Confirm once, on load, that the stored session still works. A 401 here is
+  // handled by the interceptor: it refreshes, or clears the tokens and calls
+  // the handler above.
+  useEffect(() => {
+    if (!authStateFromStorage().loggedIn) {
+      return;
     }
-  }, [auth.accessToken]);
+
+    api.post("/Account/Check")
+      .then(() => setAuth(authStateFromStorage()))
+      .catch(() => { /* already handled by the interceptor */ });
+  }, []);
 
   const router = createBrowserRouter([
     {
@@ -69,12 +53,12 @@ function App() {
         },
         {
           path: "/new",
-          loader: notebookLoader,
+          loader: () => notebookLoader({}),
           element: <Notebook mode="create" />
         },
         {
           path: "/:path",
-          loader: async ({ params, request }) => await notebookLoader(params, request, refAppContext),
+          loader: ({ params }) => notebookLoader(params, refAppContext),
           element: <Notebook mode="edit" />
         }
       ]
@@ -84,7 +68,7 @@ function App() {
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
       <AppContext.Provider value={refAppContext}>
-        <GoogleOAuthProvider clientId="272145913743-86i08ju9ruhdv18foecbrvtrucsntl2f.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <RouterProvider router={router} fallbackElement={<Loading />} />
         </GoogleOAuthProvider>
       </AppContext.Provider>
